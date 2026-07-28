@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEE Practice Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f7f9; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --phy:#4f46e5; --phy-bg:#eef0fe; --che:#0d9488; --che-bg:#e6f6f4; --mat:#d97706; --mat-bg:#fdf3e3;
+    --good:#16a34a; --bad:#dc2626; --warn:#ca8a04; --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.05);
+    --disp:'Space Grotesk',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 20px 80px}
+  header{padding:8px 0 18px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  .toprow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .brand{font-family:var(--disp);font-weight:700;font-size:1.5rem;letter-spacing:-.02em}
+  .brand span{color:var(--muted);font-weight:500;font-size:.75rem;display:block;letter-spacing:.06em;text-transform:uppercase}
+  .examtog{display:flex;background:var(--line);border-radius:10px;padding:3px}
+  .examtog button{font-family:var(--disp);font-weight:600;font-size:.85rem;border:none;background:none;color:var(--muted);padding:8px 16px;border-radius:8px;cursor:pointer;transition:.15s}
+  .examtog button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+  nav{display:flex;gap:4px;flex-wrap:wrap}
+  nav button{font-family:var(--body);font-size:.85rem;font-weight:500;border:none;background:none;color:var(--muted);padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s}
+  nav button:hover{background:var(--line);color:var(--ink)}
+  nav button.active{background:var(--ink);color:#fff}
+  h2{font-family:var(--disp);font-weight:600;font-size:1.15rem;letter-spacing:-.01em;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:20px}
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .score{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .score::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .score.phy::before{background:var(--phy)} .score.che::before{background:var(--che)} .score.mat::before{background:var(--mat)}
+  .score .tag{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .score .marks{font-family:var(--mono);font-weight:700;font-size:1.9rem;line-height:1.1;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .score.phy .marks{color:var(--phy)} .score.che .marks{color:var(--che)} .score.mat .marks{color:var(--mat)}
+  .score .meta{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+  .overall{background:var(--ink);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:var(--shadow)}
+  .overall .marks{font-family:var(--mono);font-weight:700;font-size:2rem;font-variant-numeric:tabular-nums}
+  .overall .lbl{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+  .overall .stats{display:flex;gap:20px;font-family:var(--mono);font-size:.8rem}
+  .overall .stats b{display:block;font-size:1.1rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+  label{display:block;font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:7px 14px;font-size:.85rem;font-weight:500;cursor:pointer;transition:.15s;color:var(--ink)}
+  .chip:hover{border-color:var(--muted)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip.phy.on{background:var(--phy);border-color:var(--phy)} .chip.che.on{background:var(--che);border-color:var(--che)} .chip.mat.on{background:var(--mat);border-color:var(--mat)}
+  select,input,textarea{font-family:var(--body);font-size:.9rem;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink)}
+  textarea{font-family:var(--mono);font-size:.82rem;line-height:1.5}
+  select:focus,input:focus,textarea:focus{outline:2px solid var(--phy);outline-offset:-1px;border-color:var(--phy)}
+  .btn{font-family:var(--disp);font-weight:600;font-size:.95rem;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;transition:.15s;background:var(--ink);color:#fff}
+  .btn:hover{opacity:.92;transform:translateY(-1px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn.sm{padding:8px 14px;font-size:.85rem}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .qtop .prog{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+  .pill{font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:6px}
+  .pill.phy{background:var(--phy-bg);color:var(--phy)} .pill.che{background:var(--che-bg);color:var(--che)} .pill.mat{background:var(--mat-bg);color:var(--mat)}
+  .pill.d{background:var(--line);color:var(--muted);margin-left:6px}
+  .qtext{font-size:1.05rem;font-weight:500;margin:6px 0 8px;line-height:1.55}
+  .qtype{font-size:.72rem;color:var(--muted);margin-bottom:14px;font-style:italic}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s;background:var(--card)}
+  .opt:hover{border-color:var(--muted)}
+  .opt.sel{border-color:var(--phy);background:var(--phy-bg)}
+  .opt .k{font-family:var(--mono);font-weight:700;width:22px;flex:none;color:var(--muted)}
+  .opt.sel .k{color:var(--phy)}
+  .opt.correct{border-color:var(--good);background:#eafbf0} .opt.correct .k{color:var(--good)}
+  .opt.wrong{border-color:var(--bad);background:#fdeeee} .opt.wrong .k{color:var(--bad)}
+  .opt.miss{border-color:var(--warn);background:#fdf6e3} .opt.miss .k{color:var(--warn)}
+  .numin{max-width:260px}
+  .navbtns{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
+  .dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .palsec{margin-top:14px}
+  .palsec .plabel{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .dot{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-family:var(--mono);font-size:.72rem;cursor:pointer;color:var(--muted)}
+  .dot.done{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .dot.cur{outline:2px solid var(--phy);outline-offset:1px}
+  .timer{font-family:var(--mono);font-weight:700;font-size:1.1rem;padding:6px 14px;border-radius:9px;background:var(--ink);color:#fff;font-variant-numeric:tabular-nums}
+  .timer.warn{background:var(--bad)}
+  .rev{border:1px solid var(--line);border-radius:11px;padding:16px;margin-bottom:12px;background:var(--card)}
+  .rev .rq{font-weight:500;margin:8px 0 10px}
+  .rev .tagline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .verdict{font-family:var(--mono);font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:6px}
+  .verdict.c{background:#eafbf0;color:var(--good)} .verdict.w{background:#fdeeee;color:var(--bad)} .verdict.s{background:var(--line);color:var(--muted)} .verdict.p{background:#fdf6e3;color:var(--warn)}
+  .sol{background:var(--paper);border-radius:9px;padding:12px 14px;font-size:.88rem;margin-top:10px;border-left:3px solid var(--phy)}
+  .sol b{font-family:var(--disp)}
+  .note{font-size:.8rem;color:var(--muted);background:var(--mat-bg);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.55}
+  .note.info{background:var(--phy-bg)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .hide{display:none}
+  pre{background:var(--ink);color:#e2e8f0;padding:14px;border-radius:10px;font-family:var(--mono);font-size:.76rem;overflow-x:auto;line-height:1.5;margin:10px 0}
+  .mockrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+  .mockrow:last-child{border:none}
+  .mockrow .mm{font-family:var(--mono);font-weight:700}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:.88rem;box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:90vw}
+  .toast.show{opacity:1}
+  a{color:var(--phy)}
+  @media(max-width:640px){.board{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.overall{flex-direction:column;align-items:flex-start}}
+  @media(prefers-reduced-motion){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="toprow">
+      <div class="brand">JEE Practice Deck<span>Physics · Chemistry · Maths</span></div>
+      <div class="examtog">
+        <button data-exam="Main" class="on">JEE Main</button>
+        <button data-exam="Advanced">JEE Advanced</button>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+  </header>
+
+  <section id="v-dash">
+    <h2 id="dashTitle">Running scores</h2>
+    <p class="sub" id="dashSub"></p>
+    <div class="board" id="board"></div>
+    <div class="overall">
+      <div><div class="lbl">Total marks earned</div><div class="marks" id="ovMarks">0</div></div>
+      <div class="stats">
+        <div><div class="lbl">Attempted</div><b id="ovAtt">0</b></div>
+        <div><div class="lbl">Correct</div><b id="ovCor">0</b></div>
+        <div><div class="lbl">Accuracy</div><b id="ovAcc">—</b></div>
+      </div>
+    </div>
+    <div class="card" id="mockHistCard" style="margin-top:16px">
+      <b style="font-family:var(--disp)">Mock history</b>
+      <div id="mockHist" style="margin-top:8px"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between">
+        <div><b style="font-family:var(--disp)">Question bank</b> <span class="sub" style="margin:0" id="bankCount"></span></div>
+        <div class="row">
+          <button class="btn ghost sm" id="exportBtn">Export progress</button>
+          <button class="btn ghost sm" id="resetMastBtn">Reset mastered</button>
+          <button class="btn ghost sm" id="resetBtn">Reset scores</button>
+        </div>
+      </div>
+      <div class="note">Real exam-level questions come free &amp; legal from NTA's official past papers at <a href="https://jeemain.nta.nic.in" target="_blank" rel="noopener">jeemain.nta.nic.in</a> (Main) and <a href="https://jeeadv.ac.in" target="_blank" rel="noopener">jeeadv.ac.in</a> (Advanced). Load a whole paper at once from the <b>Import</b> tab.</div>
+    </div>
+  </section>
+
+  <section id="v-setup" class="hide">
+    <h2>Build a practice set</h2>
+    <p class="sub" id="setupSub"></p>
+    <div class="card">
+      <label>Subjects</label>
+      <div class="chips" id="subChips">
+        <button class="chip phy on" data-sub="Physics">Physics</button>
+        <button class="chip che on" data-sub="Chemistry">Chemistry</button>
+        <button class="chip mat on" data-sub="Maths">Maths</button>
+      </div>
+      <label>Difficulty</label>
+      <div class="chips" id="diffChips">
+        <button class="chip on" data-diff="Easy">Easy</button>
+        <button class="chip on" data-diff="Medium">Medium</button>
+        <button class="chip on" data-diff="Hard">Hard</button>
+      </div>
+      <div class="grid2">
+        <div><label>Number of questions</label>
+          <select id="numQ"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+        <div><label>Available with these filters</label><input id="availCount" readonly value="—"></div>
+      </div>
+      <div class="row" style="margin-top:14px;gap:8px"><input type="checkbox" id="onlyNew" checked style="width:auto;accent-color:var(--phy)"><span style="font-size:.88rem">Only questions he hasn't answered correctly yet <span style="color:var(--muted)">(skip mastered)</span></span></div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="startBtn">Start practice</button></div>
+      <div class="note" id="advNote" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="v-mockset" class="hide">
+    <h2>Full mock test — JEE Main pattern</h2>
+    <p class="sub">75 questions · 300 marks · 3 hours. Each subject: 20 MCQs + 5 numerical. Marking +4 correct, −1 wrong, 0 skipped.</p>
+    <div class="card">
+      <div class="note info">This mirrors the live JEE Main 2026 paper. A countdown timer runs; the test auto-submits at zero. Each subject needs at least 20 MCQs and 5 numericals (the built-in bank already has them).</div>
+      <div id="mockAvail" style="margin:14px 0;font-family:var(--mono);font-size:.82rem;color:var(--muted)"></div>
+      <div class="row"><button class="btn" id="startMockBtn">Begin 3-hour mock</button></div>
+    </div>
+  </section>
+
+  <section id="v-run" class="hide">
+    <div class="qtop">
+      <div class="prog" id="runProg"></div>
+      <div class="row"><div id="runTags"></div><div class="timer hide" id="timer"></div></div>
+    </div>
+    <div class="card">
+      <div class="qtext" id="runQ"></div>
+      <div class="qtype" id="runTypeHint"></div>
+      <div id="runBody"></div>
+      <div class="navbtns">
+        <button class="btn ghost" id="prevBtn">← Previous</button>
+        <button class="btn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+    <div id="palette"></div>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button class="btn ghost sm" id="quitBtn">Quit without marking</button>
+      <button class="btn" id="submitBtn" style="background:var(--good)">Submit &amp; mark</button>
+    </div>
+  </section>
+
+  <section id="v-res" class="hide">
+    <h2 id="resTitle">Marked</h2>
+    <p class="sub" id="resSummary"></p>
+    <div class="board" id="resBoard"></div>
+    <div class="card" id="resTotalCard" style="display:none"></div>
+    <details style="margin-bottom:16px"><summary style="cursor:pointer;font-family:var(--disp);font-weight:600;padding:8px 0">Review all questions &amp; solutions</summary>
+      <div id="reviewList" style="margin-top:12px"></div></details>
+    <div class="row"><button class="btn" id="againBtn">New set</button><button class="btn ghost" id="toDashBtn">Dashboard</button></div>
+  </section>
+
+  <section id="v-add" class="hide">
+    <h2>Bulk import questions</h2>
+    <p class="sub">Paste an array of questions as JSON, then Load. They save to this browser and join the practice/mock pool.</p>
+    <div class="card">
+      <div class="note info">Fastest path: ask me (Claude) to "generate 40 JEE Main physics questions in the import JSON format" and paste the output straight into the box below. Or copy real questions from an NTA paper into this shape.</div>
+      <label style="margin-top:14px">Format template</label>
+      <pre id="tmpl"></pre>
+      <div class="row" style="margin-bottom:14px"><button class="btn ghost sm" id="copyTmplBtn">Copy template</button><button class="btn ghost sm" id="dlSampleBtn">Download current bank as sample</button></div>
+      <label>Paste your JSON array here</label>
+      <textarea id="importBox" rows="10" placeholder='[ { "exam":"Main", "s":"Physics", ... } ]'></textarea>
+      <div class="row" style="margin-top:14px"><button class="btn" id="loadBtn">Load questions</button><button class="btn ghost" id="clearUserBtn">Delete imported questions</button></div>
+      <div id="importResult" style="margin-top:14px;font-size:.85rem"></div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SEED = [{"exam": "Main", "s": "Physics", "d": "Easy", "t": "Kinematics", "type": "numerical", "q": "A stone is dropped from rest and falls for 3 s. Find the distance fallen in metres (g = 10 m/s²).", "val": 45, "tol": 0, "sol": "s = ½gt² = ½·10·3² = 45 m.", "id": "seed0"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Units", "type": "mcq", "q": "A car moves at 72 km/h. Its speed in m/s is:", "o": ["10", "20", "25", "36"], "a": 1, "sol": "72 km/h = 72×1000/3600 = 20 m/s.", "id": "seed1"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Projectile Motion", "type": "numerical", "q": "A ball is thrown vertically upward at 20 m/s. Find the maximum height in metres (g = 10 m/s²).", "val": 20, "tol": 0, "sol": "h = u²/(2g) = 400/20 = 20 m.", "id": "seed2"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Newton's Laws", "type": "mcq", "q": "A force of 12 N acts on a 3 kg mass. The acceleration is:", "o": ["3 m/s²", "4 m/s²", "6 m/s²", "9 m/s²"], "a": 1, "sol": "a = F/m = 12/3 = 4 m/s².", "id": "seed3"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Work & Energy", "type": "numerical", "q": "Find the kinetic energy in joules of a 2 kg body moving at 10 m/s.", "val": 100, "tol": 0, "sol": "KE = ½mv² = ½·2·100 = 100 J.", "id": "seed4"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Momentum", "type": "mcq", "q": "The linear momentum of a 4 kg body moving at 5 m/s is:", "o": ["9 kg·m/s", "20 kg·m/s", "25 kg·m/s", "40 kg·m/s"], "a": 1, "sol": "p = mv = 4·5 = 20 kg·m/s.", "id": "seed5"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Circular Motion", "type": "numerical", "q": "A body moves in a circle of radius 5 m at 10 m/s. Find its centripetal acceleration in m/s².", "val": 20, "tol": 0, "sol": "a = v²/r = 100/5 = 20 m/s².", "id": "seed6"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Gravitation", "type": "mcq", "q": "A 60 kg person weighs 600 N on Earth. On the Moon (g_moon = g/6) their weight is about:", "o": ["10 N", "60 N", "100 N", "600 N"], "a": 2, "sol": "Weight_moon = 600/6 = 100 N.", "id": "seed7"}, {"exam": "Main", "s": "Physics", "d": "Hard", "t": "Oscillations", "type": "numerical", "q": "A simple pendulum of length 1 m has time period T. Taking g = π² m/s², find T in seconds.", "val": 2, "tol": 0, "sol": "T = 2π√(L/g) = 2π√(1/π²) = 2 s.", "id": "seed8"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Waves", "type": "mcq", "q": "A wave has frequency 500 Hz and wavelength 0.68 m. Its speed is:", "o": ["170 m/s", "340 m/s", "500 m/s", "680 m/s"], "a": 1, "sol": "v = fλ = 500·0.68 = 340 m/s.", "id": "seed9"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Thermodynamics", "type": "numerical", "q": "Heat needed to raise 2 kg of water by 10°C (specific heat 4200 J/kg°C), in joules.", "val": 84000, "tol": 0, "sol": "Q = mcΔT = 2·4200·10 = 84000 J.", "id": "seed10"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Thermodynamics", "type": "mcq", "q": "100 J of heat is added to a gas which does 40 J of work. The change in internal energy is:", "o": ["40 J", "60 J", "100 J", "140 J"], "a": 1, "sol": "ΔU = Q − W = 100 − 40 = 60 J.", "id": "seed11"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "numerical", "q": "If 20 C of charge flows through a wire in 4 s, find the current in amperes.", "val": 5, "tol": 0, "sol": "I = Q/t = 20/4 = 5 A.", "id": "seed12"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "mcq", "q": "A 10 Ω resistor is connected across 20 V. The current is:", "o": ["0.5 A", "2 A", "10 A", "200 A"], "a": 1, "sol": "I = V/R = 20/10 = 2 A.", "id": "seed13"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "numerical", "q": "Three resistors of 2 Ω, 3 Ω and 5 Ω are joined in series. Find the total resistance in ohms.", "val": 10, "tol": 0, "sol": "Series: R = 2+3+5 = 10 Ω.", "id": "seed14"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Current Electricity", "type": "mcq", "q": "Two 6 Ω resistors in parallel give a combined resistance of:", "o": ["3 Ω", "6 Ω", "12 Ω", "0.33 Ω"], "a": 0, "sol": "Parallel: 1/R = 1/6+1/6 = 1/3 → R = 3 Ω.", "id": "seed15"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Electric Power", "type": "numerical", "q": "Find the power in watts when a device draws 2 A at 10 V.", "val": 20, "tol": 0, "sol": "P = VI = 10·2 = 20 W.", "id": "seed16"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Magnetism", "type": "mcq", "q": "A charge moving parallel to a magnetic field experiences a force of magnitude:", "o": ["qvB", "zero", "qv/B", "qB"], "a": 1, "sol": "F = qvB sinθ; parallel means θ=0, so force = 0.", "id": "seed17"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Optics", "type": "numerical", "q": "Find the power of a lens (in dioptres) of focal length 0.5 m.", "val": 2, "tol": 0, "sol": "P = 1/f = 1/0.5 = 2 D.", "id": "seed18"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Optics", "type": "mcq", "q": "Light travels at c/1.5 in a medium. The refractive index of the medium is:", "o": ["1", "1.5", "2", "3"], "a": 1, "sol": "n = c/v = c/(c/1.5) = 1.5.", "id": "seed19"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Modern Physics", "type": "numerical", "q": "How many electrons make up a charge of 3.2×10⁻¹⁹ C? (e = 1.6×10⁻¹⁹ C)", "val": 2, "tol": 0, "sol": "n = 3.2e-19 / 1.6e-19 = 2.", "id": "seed20"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Modern Physics", "type": "mcq", "q": "In the photoelectric effect, the kinetic energy of emitted electrons increases when you:", "o": ["increase light intensity", "increase light frequency", "decrease frequency", "increase distance"], "a": 1, "sol": "Max KE = hf − φ, so it rises with frequency, not intensity.", "id": "seed21"}, {"exam": "Main", "s": "Physics", "d": "Hard", "t": "Nuclear Physics", "type": "numerical", "q": "A radioactive sample has half-life 10 years. What fraction remains after 30 years? (give as a decimal)", "val": 0.125, "tol": 0.001, "sol": "30 years = 3 half-lives → (1/2)³ = 1/8 = 0.125.", "id": "seed22"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Units & Dimensions", "type": "mcq", "q": "The dimensional formula of work is:", "o": ["[MLT⁻²]", "[ML²T⁻²]", "[ML²T⁻¹]", "[MLT⁻¹]"], "a": 1, "sol": "Work = force×distance = [MLT⁻²][L] = [ML²T⁻²].", "id": "seed23"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Vectors", "type": "numerical", "q": "Find the magnitude of the vector 3î + 4ĵ.", "val": 5, "tol": 0, "sol": "|v| = √(3²+4²) = √25 = 5.", "id": "seed24"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Kinematics", "type": "numerical", "q": "A body starts from rest with acceleration 2 m/s². Find its speed (m/s) after covering 9 m.", "val": 6, "tol": 0, "sol": "v² = u²+2as = 0+2·2·9 = 36 → v = 6 m/s.", "id": "seed25"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Friction", "type": "mcq", "q": "If μ = 0.2 and the normal force is 50 N, the maximum friction force is:", "o": ["5 N", "10 N", "25 N", "50 N"], "a": 1, "sol": "f = μN = 0.2·50 = 10 N.", "id": "seed26"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Newton's Laws", "type": "numerical", "q": "A block slides down a frictionless incline of angle 30°. Find its acceleration (m/s²), g = 10.", "val": 5, "tol": 0, "sol": "a = g sinθ = 10·sin30° = 10·0.5 = 5 m/s².", "id": "seed27"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Atomic Structure", "type": "mcq", "q": "The number of protons in a sodium atom (atomic number 11) is:", "o": ["10", "11", "12", "23"], "a": 1, "sol": "Atomic number = number of protons = 11.", "id": "seed28"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "mcq", "q": "The number of moles in 36 g of water (molar mass 18) is:", "o": ["0.5", "1", "2", "4"], "a": 2, "sol": "n = 36/18 = 2 mol.", "id": "seed29"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "numerical", "q": "Find the number of moles in 88 g of CO₂ (molar mass 44).", "val": 2, "tol": 0, "sol": "n = 88/44 = 2 mol.", "id": "seed30"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "numerical", "q": "Find the number of moles in 96 g of O₂ (molar mass 32).", "val": 3, "tol": 0, "sol": "n = 96/32 = 3 mol.", "id": "seed31"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Periodic Table", "type": "mcq", "q": "Which of these has the largest atomic radius?", "o": ["Li", "Na", "K", "Rb"], "a": 3, "sol": "Atomic radius increases down a group; Rb is largest here.", "id": "seed32"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Chemical Bonding", "type": "mcq", "q": "Which molecule is non-polar overall?", "o": ["H₂O", "NH₃", "HCl", "CO₂"], "a": 3, "sol": "CO₂ is linear and symmetric; bond dipoles cancel.", "id": "seed33"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Stoichiometry", "type": "numerical", "q": "For 2H₂ + O₂ → 2H₂O, how many moles of O₂ react completely with 4 mol H₂?", "val": 2, "tol": 0, "sol": "H₂:O₂ = 2:1, so 4 mol H₂ needs 2 mol O₂.", "id": "seed34"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Thermodynamics", "type": "mcq", "q": "For an exothermic reaction, the sign of ΔH is:", "o": ["Positive", "Negative", "Zero", "Undefined"], "a": 1, "sol": "Heat is released, so ΔH < 0.", "id": "seed35"}, {"exam": "Main", "s": "Chemistry", "d": "Hard", "t": "Ionic Equilibrium", "type": "numerical", "q": "Find the pH of a 0.001 M HCl solution.", "val": 3, "tol": 0, "sol": "[H⁺]=10⁻³ → pH = 3.", "id": "seed36"}, {"exam": "Main", "s": "Chemistry", "d": "Hard", "t": "Redox", "type": "numerical", "q": "Find the oxidation state of Mn in KMnO₄.", "val": 7, "tol": 0, "sol": "+1 + Mn + 4(−2) = 0 → Mn = +7.", "id": "seed37"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Organic Chemistry", "type": "mcq", "q": "The functional group in ethanol (C₂H₅OH) is:", "o": ["Carbonyl", "Hydroxyl", "Carboxyl", "Amino"], "a": 1, "sol": "–OH is the hydroxyl group.", "id": "seed38"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Redox", "type": "numerical", "q": "Find the oxidation state of S in H₂SO₄.", "val": 6, "tol": 0, "sol": "2(+1) + S + 4(−2) = 0 → S = +6.", "id": "seed39"}, {"exam": "Main", "s": "Chemistry", "d": "Hard", "t": "Redox", "type": "numerical", "q": "Find the oxidation state of Cr in K₂Cr₂O₇.", "val": 6, "tol": 0, "sol": "2(+1) + 2Cr + 7(−2) = 0 → 2Cr = 12 → Cr = +6.", "id": "seed40"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Gaseous State", "type": "mcq", "q": "At constant temperature, if the pressure on a gas is doubled, its volume:", "o": ["doubles", "halves", "stays same", "quadruples"], "a": 1, "sol": "Boyle's law: PV constant, so V halves.", "id": "seed41"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Gaseous State", "type": "numerical", "q": "How many moles of an ideal gas occupy 44.8 L at STP? (molar volume 22.4 L/mol)", "val": 2, "tol": 0, "sol": "n = 44.8/22.4 = 2 mol.", "id": "seed42"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Atomic Structure", "type": "mcq", "q": "The maximum number of electrons in the shell n = 2 is:", "o": ["2", "8", "18", "32"], "a": 1, "sol": "Max = 2n² = 2·4 = 8.", "id": "seed43"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Atomic Structure", "type": "numerical", "q": "Find the number of neutrons in a ³⁵Cl atom (atomic number 17).", "val": 18, "tol": 0, "sol": "Neutrons = 35 − 17 = 18.", "id": "seed44"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Periodic Table", "type": "mcq", "q": "The most electronegative element is:", "o": ["Oxygen", "Fluorine", "Chlorine", "Nitrogen"], "a": 1, "sol": "Fluorine has the highest electronegativity (3.98).", "id": "seed45"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Chemical Bonding", "type": "mcq", "q": "The number of covalent bonds in a methane (CH₄) molecule is:", "o": ["2", "3", "4", "5"], "a": 2, "sol": "Carbon forms 4 C–H single bonds.", "id": "seed46"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Solutions", "type": "numerical", "q": "Find the molarity when 0.5 mol of solute is dissolved to make 2 L of solution.", "val": 0.25, "tol": 0.001, "sol": "M = moles/volume = 0.5/2 = 0.25 M.", "id": "seed47"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Ionic Equilibrium", "type": "mcq", "q": "The pH of a neutral aqueous solution at 25°C is:", "o": ["0", "7", "14", "1"], "a": 1, "sol": "Neutral water at 25°C has pH = 7.", "id": "seed48"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Ionic Equilibrium", "type": "numerical", "q": "If a solution has pH = 4, find its pOH (at 25°C).", "val": 10, "tol": 0, "sol": "pH + pOH = 14 → pOH = 14 − 4 = 10.", "id": "seed49"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Organic Chemistry", "type": "mcq", "q": "The general formula of alkanes is:", "o": ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂", "CₙHₙ"], "a": 1, "sol": "Alkanes are saturated: CₙH₂ₙ₊₂.", "id": "seed50"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Organic Chemistry", "type": "numerical", "q": "How many carbon atoms are there in a molecule of propane (C₃H₈)?", "val": 3, "tol": 0, "sol": "Propane is C₃H₈, so 3 carbons.", "id": "seed51"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Thermodynamics", "type": "mcq", "q": "For a spontaneous process at constant T and P, the sign of ΔG is:", "o": ["Positive", "Negative", "Zero", "Cannot say"], "a": 1, "sol": "Spontaneous ⇒ ΔG < 0.", "id": "seed52"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Mole Concept", "type": "numerical", "q": "Find the molar mass of CaCO₃ (Ca=40, C=12, O=16).", "val": 100, "tol": 0, "sol": "40 + 12 + 3·16 = 100 g/mol.", "id": "seed53"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Electrochemistry", "type": "mcq", "q": "In an electrochemical cell, oxidation occurs at the:", "o": ["Anode", "Cathode", "Both", "Neither"], "a": 0, "sol": "Oxidation always occurs at the anode.", "id": "seed54"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Quadratic Equations", "type": "mcq", "q": "The roots of x² − 5x + 6 = 0 are:", "o": ["1 and 6", "2 and 3", "−2 and −3", "1 and 5"], "a": 1, "sol": "(x−2)(x−3)=0 → x = 2, 3.", "id": "seed55"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "mcq", "q": "The value of sin 30° is:", "o": ["1", "1/2", "√3/2", "0"], "a": 1, "sol": "sin 30° = 1/2.", "id": "seed56"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sequences & Series", "type": "numerical", "q": "Find the sum of the first 10 natural numbers.", "val": 55, "tol": 0, "sol": "n(n+1)/2 = 10·11/2 = 55.", "id": "seed57"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "mcq", "q": "The derivative of x³ with respect to x is:", "o": ["x²", "3x", "3x²", "x⁴/4"], "a": 2, "sol": "d/dx(xⁿ)=n xⁿ⁻¹ → 3x².", "id": "seed58"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "numerical", "q": "Evaluate ∫₀¹ 2x dx.", "val": 1, "tol": 0, "sol": "[x²]₀¹ = 1.", "id": "seed59"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Complex Numbers", "type": "mcq", "q": "The modulus of 3 + 4i is:", "o": ["1", "5", "7", "25"], "a": 1, "sol": "√(3²+4²) = 5.", "id": "seed60"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Permutations", "type": "numerical", "q": "In how many ways can 3 distinct books be arranged in a row?", "val": 6, "tol": 0, "sol": "3! = 6.", "id": "seed61"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Logarithms", "type": "numerical", "q": "Find the value of log₂ 8.", "val": 3, "tol": 0, "sol": "2³ = 8 → log₂8 = 3.", "id": "seed62"}, {"exam": "Main", "s": "Maths", "d": "Hard", "t": "Combinations", "type": "numerical", "q": "If ⁿC₂ = 10, find n.", "val": 5, "tol": 0, "sol": "n(n−1)/2 = 10 → n = 5.", "id": "seed63"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Matrices", "type": "mcq", "q": "The determinant of [[2,0],[0,3]] is:", "o": ["0", "5", "6", "1"], "a": 2, "sol": "Diagonal: 2·3 − 0 = 6.", "id": "seed64"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sequences & Series", "type": "numerical", "q": "Find the 10th term of the AP with first term 2 and common difference 3.", "val": 29, "tol": 0, "sol": "a+9d = 2+27 = 29.", "id": "seed65"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sequences & Series", "type": "numerical", "q": "Find the sum of the infinite GP 1 + 1/2 + 1/4 + ...", "val": 2, "tol": 0, "sol": "S = a/(1−r) = 1/(1−½) = 2.", "id": "seed66"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "mcq", "q": "The value of cos 60° is:", "o": ["0", "1/2", "√3/2", "1"], "a": 1, "sol": "cos 60° = 1/2.", "id": "seed67"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "numerical", "q": "Find the value of d/dx(sin x) at x = 0.", "val": 1, "tol": 0, "sol": "d/dx sin x = cos x; cos 0 = 1.", "id": "seed68"}, {"exam": "Main", "s": "Maths", "d": "Hard", "t": "Calculus", "type": "numerical", "q": "Evaluate ∫₀^π sin x dx.", "val": 2, "tol": 0, "sol": "[−cos x]₀^π = −(−1) − (−1) = 2.", "id": "seed69"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Probability", "type": "mcq", "q": "The probability of getting an even number on a fair die is:", "o": ["1/6", "1/3", "1/2", "2/3"], "a": 2, "sol": "Even outcomes {2,4,6}: 3/6 = 1/2.", "id": "seed70"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Probability", "type": "numerical", "q": "When two dice are rolled, how many outcomes give a sum of 7?", "val": 6, "tol": 0, "sol": "(1,6),(2,5),(3,4),(4,3),(5,2),(6,1) = 6.", "id": "seed71"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Binomial Theorem", "type": "mcq", "q": "The coefficient of x² in (1+x)⁴ is:", "o": ["4", "6", "12", "16"], "a": 1, "sol": "⁴C₂ = 6.", "id": "seed72"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Combinations", "type": "numerical", "q": "Find the value of ⁵C₂.", "val": 10, "tol": 0, "sol": "5!/(2!3!) = 10.", "id": "seed73"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Coordinate Geometry", "type": "mcq", "q": "The distance between (0,0) and (3,4) is:", "o": ["5", "7", "25", "1"], "a": 0, "sol": "√(3²+4²) = 5.", "id": "seed74"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Coordinate Geometry", "type": "numerical", "q": "Find the slope of the line through (1,2) and (3,6).", "val": 2, "tol": 0, "sol": "(6−2)/(3−1) = 2.", "id": "seed75"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Vectors", "type": "mcq", "q": "The dot product of unit vectors î and ĵ is:", "o": ["0", "1", "−1", "√2"], "a": 0, "sol": "Perpendicular unit vectors → dot product 0.", "id": "seed76"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Vectors", "type": "numerical", "q": "Find the magnitude of the vector 6î + 8ĵ.", "val": 10, "tol": 0, "sol": "√(36+64) = 10.", "id": "seed77"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Matrices", "type": "mcq", "q": "The product of a 2×3 matrix and a 3×4 matrix has order:", "o": ["2×3", "3×4", "2×4", "4×2"], "a": 2, "sol": "(2×3)(3×4) → 2×4.", "id": "seed78"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Logarithms", "type": "numerical", "q": "Find the value of log₁₀ 1000.", "val": 3, "tol": 0, "sol": "10³ = 1000 → 3.", "id": "seed79"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "numerical", "q": "Find the value of tan 45°.", "val": 1, "tol": 0, "sol": "tan 45° = 1.", "id": "seed80"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sets", "type": "mcq", "q": "If |A|=3, |B|=4 and |A∩B|=1, then |A∪B| is:", "o": ["6", "7", "8", "1"], "a": 0, "sol": "|A∪B| = 3+4−1 = 6.", "id": "seed81"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "numerical", "q": "Evaluate ∫₀² x dx.", "val": 2, "tol": 0, "sol": "[x²/2]₀² = 4/2 = 2.", "id": "seed82"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Units", "type": "mcq", "q": "The SI unit of power is the:", "o": ["Joule", "Watt", "Newton", "Pascal"], "a": 1, "sol": "Power = energy/time, measured in watts (J/s).", "id": "seed83"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Vectors", "type": "mcq", "q": "Which of these is a scalar quantity?", "o": ["Displacement", "Velocity", "Temperature", "Acceleration"], "a": 2, "sol": "Temperature has magnitude only, so it is a scalar.", "id": "seed84"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Circular Motion", "type": "mcq", "q": "In uniform circular motion, which quantity stays constant?", "o": ["Velocity", "Speed", "Acceleration direction", "Momentum"], "a": 1, "sol": "Speed is constant; velocity direction keeps changing.", "id": "seed85"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "mcq", "q": "The SI unit of electric charge is the:", "o": ["Ampere", "Coulomb", "Volt", "Ohm"], "a": 1, "sol": "Charge is measured in coulombs.", "id": "seed86"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Gravitation", "type": "mcq", "q": "Acceleration due to gravity is greatest at the:", "o": ["Equator", "Poles", "Centre of Earth", "Mountain top"], "a": 1, "sol": "g is maximum at the poles (Earth is flattened there).", "id": "seed87"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Current Electricity", "type": "mcq", "q": "Kirchhoff's current law is a statement of conservation of:", "o": ["Energy", "Charge", "Momentum", "Mass"], "a": 1, "sol": "KCL follows from conservation of charge at a junction.", "id": "seed88"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Electromagnetism", "type": "mcq", "q": "A device that converts mechanical energy into electrical energy is a:", "o": ["Motor", "Generator", "Transformer", "Battery"], "a": 1, "sol": "A generator converts mechanical to electrical energy.", "id": "seed89"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Optics", "type": "mcq", "q": "In a vacuum, which travels fastest?", "o": ["Sound", "Light", "Water waves", "All equal"], "a": 1, "sol": "Light travels at 3×10⁸ m/s; sound needs a medium.", "id": "seed90"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "mcq", "q": "Ohm's law relates voltage and current through the:", "o": ["Power", "Resistance", "Charge", "Frequency"], "a": 1, "sol": "V = IR, where R is resistance.", "id": "seed91"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Periodic Table", "type": "mcq", "q": "The lightest element is:", "o": ["Hydrogen", "Helium", "Lithium", "Carbon"], "a": 0, "sol": "Hydrogen (atomic number 1) is the lightest element.", "id": "seed92"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Chemical Reactions", "type": "mcq", "q": "The gas usually released when a reactive metal reacts with a dilute acid is:", "o": ["Oxygen", "Hydrogen", "Carbon dioxide", "Nitrogen"], "a": 1, "sol": "Metal + dilute acid → salt + hydrogen gas.", "id": "seed93"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "mcq", "q": "The number of atoms in one molecule of water is:", "o": ["2", "3", "4", "1"], "a": 1, "sol": "H₂O has 2 H + 1 O = 3 atoms.", "id": "seed94"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Ionic Equilibrium", "type": "mcq", "q": "The pH of a strongly acidic solution is:", "o": ["Close to 0", "Exactly 7", "Close to 14", "Above 14"], "a": 0, "sol": "Strong acids have very low pH, close to 0.", "id": "seed95"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Periodic Table", "type": "mcq", "q": "Which of these is a noble gas?", "o": ["Hydrogen", "Helium", "Oxygen", "Nitrogen"], "a": 1, "sol": "Helium is in Group 18, the noble gases.", "id": "seed96"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Chemical Bonding", "type": "mcq", "q": "The bond in sodium chloride (NaCl) is:", "o": ["Covalent", "Ionic", "Metallic", "Hydrogen"], "a": 1, "sol": "NaCl forms by electron transfer → ionic bond.", "id": "seed97"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Mole Concept", "type": "mcq", "q": "The atomicity of an ozone molecule (O₃) is:", "o": ["1", "2", "3", "4"], "a": 2, "sol": "Ozone has 3 atoms, so atomicity = 3.", "id": "seed98"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Periodic Table", "type": "mcq", "q": "Which of these is a metal?", "o": ["Sulfur", "Iron", "Oxygen", "Chlorine"], "a": 1, "sol": "Iron is a metal; the others are non-metals.", "id": "seed99"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Geometry", "type": "mcq", "q": "The number of degrees in a right angle is:", "o": ["45", "60", "90", "180"], "a": 2, "sol": "A right angle is 90°.", "id": "seed100"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Factorials", "type": "mcq", "q": "The value of 0! is:", "o": ["0", "1", "Undefined", "10"], "a": 1, "sol": "By definition, 0! = 1.", "id": "seed101"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Functions", "type": "mcq", "q": "If f(x) = 2x + 3, then f(2) equals:", "o": ["5", "7", "9", "4"], "a": 1, "sol": "f(2) = 2·2 + 3 = 7.", "id": "seed102"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Geometry", "type": "mcq", "q": "The sum of the interior angles of a triangle is:", "o": ["90°", "180°", "270°", "360°"], "a": 1, "sol": "Interior angles of any triangle sum to 180°.", "id": "seed103"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Number Systems", "type": "mcq", "q": "Which of these is a rational number?", "o": ["√2", "π", "1/3", "e"], "a": 2, "sol": "1/3 is a ratio of integers; the others are irrational.", "id": "seed104"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "mcq", "q": "The value of sin 90° is:", "o": ["0", "1/2", "1", "√3/2"], "a": 2, "sol": "sin 90° = 1.", "id": "seed105"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Matrices", "type": "mcq", "q": "The determinant of the 2×2 identity matrix is:", "o": ["0", "1", "2", "4"], "a": 1, "sol": "det(I) = 1·1 − 0·0 = 1.", "id": "seed106"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Number Systems", "type": "mcq", "q": "The value of |−7| is:", "o": ["−7", "7", "0", "14"], "a": 1, "sol": "Absolute value: |−7| = 7.", "id": "seed107"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Geometry", "type": "mcq", "q": "The number of sides in a hexagon is:", "o": ["5", "6", "7", "8"], "a": 1, "sol": "A hexagon has 6 sides.", "id": "seed108"}, {"exam": "Advanced", "s": "Physics", "d": "Medium", "t": "Vectors", "type": "multiple", "q": "Which of the following are vector quantities?", "o": ["Velocity", "Speed", "Force", "Kinetic energy"], "as": [0, 2], "sol": "Velocity and force have direction; speed and energy are scalars.", "id": "seed109"}, {"exam": "Advanced", "s": "Physics", "d": "Medium", "t": "Units & Dimensions", "type": "multiple", "q": "Which of these quantities share the dimension [ML²T⁻²]?", "o": ["Work", "Kinetic energy", "Torque", "Power"], "as": [0, 1, 2], "sol": "Work, energy and torque are all [ML²T⁻²]; power is [ML²T⁻³].", "id": "seed110"}, {"exam": "Advanced", "s": "Physics", "d": "Medium", "t": "Newton's Laws", "type": "numerical", "q": "A block slides down a frictionless incline of 30°. Find its acceleration (m/s²), g = 10.", "val": 5, "tol": 0, "sol": "a = g sin30° = 5 m/s².", "id": "seed111"}, {"exam": "Advanced", "s": "Physics", "d": "Medium", "t": "Current Electricity", "type": "numerical", "q": "Find the equivalent resistance (Ω) of 4 Ω and 12 Ω connected in parallel.", "val": 3, "tol": 0, "sol": "1/R = 1/4 + 1/12 = 4/12 → R = 3 Ω.", "id": "seed112"}, {"exam": "Advanced", "s": "Physics", "d": "Easy", "t": "Work & Energy", "type": "numerical", "q": "Find the kinetic energy (J) of a 2 kg mass moving at 3 m/s.", "val": 9, "tol": 0, "sol": "½·2·9 = 9 J.", "id": "seed113"}, {"exam": "Advanced", "s": "Chemistry", "d": "Medium", "t": "Periodic Table", "type": "multiple", "q": "Which of the following are noble gases?", "o": ["Helium", "Oxygen", "Neon", "Nitrogen"], "as": [0, 2], "sol": "He and Ne are noble gases (Group 18).", "id": "seed114"}, {"exam": "Advanced", "s": "Chemistry", "d": "Medium", "t": "Acids & Bases", "type": "multiple", "q": "Which of the following are strong acids?", "o": ["HCl", "CH₃COOH", "H₂SO₄", "HF"], "as": [0, 2], "sol": "HCl and H₂SO₄ are strong; acetic and hydrofluoric acids are weak.", "id": "seed115"}, {"exam": "Advanced", "s": "Chemistry", "d": "Medium", "t": "Redox", "type": "numerical", "q": "Find the oxidation state of N in HNO₃.", "val": 5, "tol": 0, "sol": "+1 + N + 3(−2) = 0 → N = +5.", "id": "seed116"}, {"exam": "Advanced", "s": "Chemistry", "d": "Medium", "t": "Chemical Bonding", "type": "mcq", "q": "The hybridisation of carbon in methane (CH₄) is:", "o": ["sp", "sp²", "sp³", "sp³d"], "a": 2, "sol": "Four sigma bonds, tetrahedral → sp³.", "id": "seed117"}, {"exam": "Advanced", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "numerical", "q": "Find the molar mass of water H₂O (H=1, O=16).", "val": 18, "tol": 0, "sol": "2·1 + 16 = 18 g/mol.", "id": "seed118"}, {"exam": "Advanced", "s": "Maths", "d": "Medium", "t": "Functions", "type": "multiple", "q": "Which of the following are odd functions?", "o": ["sin x", "cos x", "x³", "x²"], "as": [0, 2], "sol": "sin x and x³ satisfy f(−x) = −f(x); cos x and x² are even.", "id": "seed119"}, {"exam": "Advanced", "s": "Maths", "d": "Medium", "t": "Number Theory", "type": "multiple", "q": "Which of the following are prime numbers?", "o": ["2", "9", "11", "15"], "as": [0, 2], "sol": "2 and 11 are prime; 9 = 3², 15 = 3·5.", "id": "seed120"}, {"exam": "Advanced", "s": "Maths", "d": "Easy", "t": "Combinatorics", "type": "numerical", "q": "Find the value of 5! (five factorial).", "val": 120, "tol": 0, "sol": "5·4·3·2·1 = 120.", "id": "seed121"}, {"exam": "Advanced", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "mcq", "q": "The derivative of eˣ with respect to x is:", "o": ["eˣ", "x·eˣ⁻¹", "1", "ln x"], "a": 0, "sol": "d/dx(eˣ) = eˣ.", "id": "seed122"}, {"exam": "Advanced", "s": "Maths", "d": "Medium", "t": "Quadratic Equations", "type": "numerical", "q": "Find the sum of the roots of x² − 7x + 12 = 0.", "val": 7, "tol": 0, "sol": "Sum of roots = −b/a = 7 (roots 3 and 4).", "id": "seed123"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Kinematics", "type": "numerical", "q": "A car accelerates uniformly from 10 m/s to 30 m/s in 4 s. Find its acceleration in m/s².", "val": 5, "tol": 0, "sol": "a = (v−u)/t = (30−10)/4 = 5 m/s².", "id": "seed124"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Newton's Laws", "type": "mcq", "q": "The SI unit of force is the:", "o": ["Joule", "Newton", "Watt", "Pascal"], "a": 1, "sol": "Force is measured in newtons (kg·m/s²).", "id": "seed125"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Newton's Laws", "type": "numerical", "q": "A net force of 20 N acts on a 5 kg object. Find its acceleration in m/s².", "val": 4, "tol": 0, "sol": "a = F/m = 20/5 = 4 m/s².", "id": "seed126"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Momentum", "type": "numerical", "q": "Find the momentum (kg·m/s) of a 3 kg body moving at 6 m/s.", "val": 18, "tol": 0, "sol": "p = mv = 3·6 = 18.", "id": "seed127"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Work & Energy", "type": "mcq", "q": "The work done by a force perpendicular to the displacement is:", "o": ["Maximum", "Zero", "Negative", "mgh"], "a": 1, "sol": "W = Fd cosθ; θ = 90° gives cos90° = 0.", "id": "seed128"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Electric Power", "type": "numerical", "q": "A machine does 600 J of work in 30 s. Find its power in watts.", "val": 20, "tol": 0, "sol": "P = W/t = 600/30 = 20 W.", "id": "seed129"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Work & Energy", "type": "numerical", "q": "Find the potential energy (J) of a 2 kg mass at height 5 m (g = 10 m/s²).", "val": 100, "tol": 0, "sol": "PE = mgh = 2·10·5 = 100 J.", "id": "seed130"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Gravitation", "type": "mcq", "q": "A satellite orbiting Earth is in a continuous state of:", "o": ["Zero gravity", "Free fall", "Rest", "Constant velocity"], "a": 1, "sol": "It is perpetually falling toward Earth while moving forward — free fall.", "id": "seed131"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Waves", "type": "numerical", "q": "Find the time period (s) of a wave of frequency 4 Hz.", "val": 0.25, "tol": 0.001, "sol": "T = 1/f = 1/4 = 0.25 s.", "id": "seed132"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "numerical", "q": "A resistor carries 3 A when 12 V is applied. Find its resistance in ohms.", "val": 4, "tol": 0, "sol": "R = V/I = 12/3 = 4 Ω.", "id": "seed133"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "mcq", "q": "For a fixed resistor, doubling the voltage changes the current to:", "o": ["Half", "Double", "Unchanged", "Quadruple"], "a": 1, "sol": "I = V/R, so doubling V doubles I.", "id": "seed134"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Current Electricity", "type": "numerical", "q": "Find the charge (C) that flows when a current of 2 A runs for 5 s.", "val": 10, "tol": 0, "sol": "Q = It = 2·5 = 10 C.", "id": "seed135"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Current Electricity", "type": "numerical", "q": "Find the equivalent resistance (Ω) of two 3 Ω resistors in parallel.", "val": 1.5, "tol": 0.001, "sol": "1/R = 1/3 + 1/3 = 2/3 → R = 1.5 Ω.", "id": "seed136"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Optics", "type": "mcq", "q": "A convex lens is also known as a:", "o": ["Diverging lens", "Converging lens", "Plane lens", "Concave lens"], "a": 1, "sol": "A convex lens converges parallel rays to a focus.", "id": "seed137"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Kinematics", "type": "numerical", "q": "A body moving at 15 m/s comes to rest uniformly in 3 s. Find the magnitude of its deceleration in m/s².", "val": 5, "tol": 0, "sol": "a = (0−15)/3 = −5, magnitude 5 m/s².", "id": "seed138"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Mechanical Properties", "type": "numerical", "q": "Find the density (g/cm³) of an object of mass 200 g and volume 100 cm³.", "val": 2, "tol": 0, "sol": "ρ = m/V = 200/100 = 2 g/cm³.", "id": "seed139"}, {"exam": "Main", "s": "Physics", "d": "Easy", "t": "Mechanical Properties", "type": "mcq", "q": "The physical quantity measured in pascals is:", "o": ["Force", "Pressure", "Energy", "Power"], "a": 1, "sol": "Pressure = force/area, unit pascal (N/m²).", "id": "seed140"}, {"exam": "Main", "s": "Physics", "d": "Medium", "t": "Thermodynamics", "type": "numerical", "q": "Find the heat (J) needed to raise 1 kg of water by 5°C (c = 4200 J/kg°C).", "val": 21000, "tol": 0, "sol": "Q = mcΔT = 1·4200·5 = 21000 J.", "id": "seed141"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Sequences & Series", "type": "numerical", "q": "Find the sum of the first 20 natural numbers.", "val": 210, "tol": 0, "sol": "n(n+1)/2 = 20·21/2 = 210.", "id": "seed142"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Quadratic Equations", "type": "mcq", "q": "The roots of x² − 7x + 10 = 0 are:", "o": ["2 and 5", "1 and 10", "−2 and −5", "3 and 4"], "a": 0, "sol": "(x−2)(x−5) = 0 → x = 2, 5.", "id": "seed143"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Permutations", "type": "numerical", "q": "Find the value of 6! (six factorial).", "val": 720, "tol": 0, "sol": "6·5·4·3·2·1 = 720.", "id": "seed144"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "numerical", "q": "Find the value of d/dx(x⁴) at x = 2.", "val": 32, "tol": 0, "sol": "d/dx(x⁴) = 4x³; at x=2 → 4·8 = 32.", "id": "seed145"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "mcq", "q": "The value of sin²θ + cos²θ is:", "o": ["0", "1", "2", "tan²θ"], "a": 1, "sol": "Fundamental identity: sin²θ + cos²θ = 1.", "id": "seed146"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "numerical", "q": "Evaluate ∫₀² 3x² dx.", "val": 8, "tol": 0, "sol": "[x³]₀² = 8.", "id": "seed147"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Complex Numbers", "type": "numerical", "q": "Find the modulus of the complex number 5 − 12i.", "val": 13, "tol": 0, "sol": "√(5² + 12²) = √169 = 13.", "id": "seed148"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Permutations", "type": "mcq", "q": "The number of ways to arrange 4 distinct items in a row is:", "o": ["12", "16", "24", "4"], "a": 2, "sol": "4! = 24.", "id": "seed149"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Logarithms", "type": "numerical", "q": "Find the value of log₃ 81.", "val": 4, "tol": 0, "sol": "3⁴ = 81 → log₃81 = 4.", "id": "seed150"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Combinations", "type": "numerical", "q": "Find the value of ⁶C₃.", "val": 20, "tol": 0, "sol": "6!/(3!3!) = 20.", "id": "seed151"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sequences & Series", "type": "numerical", "q": "Find the 7th term of the AP with first term 5 and common difference 4.", "val": 29, "tol": 0, "sol": "a + 6d = 5 + 24 = 29.", "id": "seed152"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Sequences & Series", "type": "numerical", "q": "Find the sum of the infinite GP with first term 2 and ratio 1/3.", "val": 3, "tol": 0.001, "sol": "S = a/(1−r) = 2/(2/3) = 3.", "id": "seed153"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Trigonometry", "type": "mcq", "q": "The value of tan 60° is:", "o": ["1", "√3", "1/√3", "0"], "a": 1, "sol": "tan 60° = √3.", "id": "seed154"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Coordinate Geometry", "type": "numerical", "q": "Find the slope of the line through (2,3) and (5,12).", "val": 3, "tol": 0, "sol": "(12−3)/(5−2) = 9/3 = 3.", "id": "seed155"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Coordinate Geometry", "type": "numerical", "q": "Find the distance between the points (1,1) and (4,5).", "val": 5, "tol": 0, "sol": "√(3² + 4²) = 5.", "id": "seed156"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Calculus", "type": "mcq", "q": "The derivative of ln x with respect to x is:", "o": ["1/x", "x", "ln x", "eˣ"], "a": 0, "sol": "d/dx(ln x) = 1/x.", "id": "seed157"}, {"exam": "Main", "s": "Maths", "d": "Easy", "t": "Functions", "type": "numerical", "q": "If f(x) = x² − 3, find f(4).", "val": 13, "tol": 0, "sol": "f(4) = 16 − 3 = 13.", "id": "seed158"}, {"exam": "Main", "s": "Maths", "d": "Medium", "t": "Matrices", "type": "mcq", "q": "The determinant of [[3,1],[2,4]] is:", "o": ["10", "12", "14", "2"], "a": 0, "sol": "3·4 − 1·2 = 12 − 2 = 10.", "id": "seed159"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Mole Concept", "type": "numerical", "q": "Find the number of moles in 40 g of NaOH (molar mass 40).", "val": 1, "tol": 0, "sol": "n = 40/40 = 1 mol.", "id": "seed160"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Atomic Structure", "type": "mcq", "q": "The number of electrons in a neutral oxygen atom (atomic number 8) is:", "o": ["6", "8", "10", "16"], "a": 1, "sol": "Neutral atom: electrons = protons = 8.", "id": "seed161"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Redox", "type": "numerical", "q": "Find the oxidation state of carbon in CO₂.", "val": 4, "tol": 0, "sol": "C + 2(−2) = 0 → C = +4.", "id": "seed162"}, {"exam": "Main", "s": "Chemistry", "d": "Easy", "t": "Chemical Bonding", "type": "mcq", "q": "Which of these is a diatomic molecule?", "o": ["He", "O₂", "H₂O", "CH₄"], "a": 1, "sol": "O₂ has exactly two atoms — diatomic.", "id": "seed163"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Mole Concept", "type": "numerical", "q": "Find the molar mass of NaCl (Na = 23, Cl = 35.5).", "val": 58.5, "tol": 0.01, "sol": "23 + 35.5 = 58.5 g/mol.", "id": "seed164"}, {"exam": "Main", "s": "Chemistry", "d": "Medium", "t": "Ionic Equilibrium", "type": "numerical", "q": "Find the pH of a 0.01 M HCl solution.", "val": 2, "tol": 0, "sol": "[H⁺] = 10⁻² → pH = 2.", "id": "seed165"}];
+
+const SUBJECTS=["Physics","Chemistry","Maths"];
+const K_STATS="jee_stats_v2",K_UQ="jee_userq_v2",K_MOCK="jee_mock_v2",K_MAST="jee_mastered_v2",K_HIST="jee_hist_v2";
+let CUR_EXAM="Main", test=null, timerInt=null;
+
+const $=id=>document.getElementById(id);
+const cls=s=>s==="Physics"?"phy":s==="Chemistry"?"che":"mat";
+const blank=()=>({attempted:0,correct:0,wrong:0,marks:0});
+function emptyStats(){return{Main:{Physics:blank(),Chemistry:blank(),Maths:blank()},Advanced:{Physics:blank(),Chemistry:blank(),Maths:blank()}};}
+function loadStats(){try{const s=JSON.parse(localStorage.getItem(K_STATS));return s&&s.Main?s:emptyStats();}catch(e){return emptyStats();}}
+function saveStats(s){localStorage.setItem(K_STATS,JSON.stringify(s));}
+function loadUQ(){try{return JSON.parse(localStorage.getItem(K_UQ))||[];}catch(e){return[];}}
+function saveUQ(a){localStorage.setItem(K_UQ,JSON.stringify(a));}
+function loadMocks(){try{return JSON.parse(localStorage.getItem(K_MOCK))||[];}catch(e){return[];}}
+function saveMocks(a){localStorage.setItem(K_MOCK,JSON.stringify(a));}
+function loadMastered(){try{return JSON.parse(localStorage.getItem(K_MAST))||[];}catch(e){return[];}}
+function saveMastered(){localStorage.setItem(K_MAST,JSON.stringify([...mastered]));}
+function bank(){return SEED.concat(loadUQ());}
+function forExam(e){return bank().filter(q=>q.exam===e);}
+let stats=loadStats();
+let mastered=new Set(loadMastered());
+
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
+
+function scoreQ(q,ans,exam){
+  if(q.type==="mcq"){ if(ans==null) return{m:0,st:"s"}; const ok=ans===q.a; return ok?{m:exam==="Advanced"?3:4,st:"c"}:{m:-1,st:"w"}; }
+  if(q.type==="numerical"){ if(ans==null||ans==="") return{m:0,st:"s"}; const ok=Math.abs(parseFloat(ans)-q.val)<=(q.tol||0)+1e-9; return ok?{m:4,st:"c"}:{m:exam==="Advanced"?0:-1,st:"w"}; }
+  const chosen=ans||[]; if(!chosen.length) return{m:0,st:"s"};
+  const corr=q.as; const anyWrong=chosen.some(k=>!corr.includes(k));
+  if(anyWrong) return{m:-2,st:"w"};
+  if(chosen.length===corr.length) return{m:4,st:"c"};
+  return{m:chosen.length,st:"p"};
+}
+function maxMarks(q,exam){ return q.type==="mcq"&&exam==="Advanced"?3:4; }
+
+const MAIN_NAV=[["dash","Dashboard"],["setup","Practice"],["mockset","Mock test"],["add","Import"]];
+const ADV_NAV=[["dash","Dashboard"],["setup","Practice"],["add","Import"]];
+function buildNav(){
+  const items=CUR_EXAM==="Main"?MAIN_NAV:ADV_NAV;
+  $("nav").innerHTML=items.map((x,i)=>`<button data-view="${x[0]}" class="${i===0?'active':''}">${x[1]}</button>`).join("");
+  $("nav").querySelectorAll("button").forEach(b=>b.onclick=()=>go(b.dataset.view));
+}
+function go(v){
+  if(timerInt&&v!=="run"){clearInterval(timerInt);timerInt=null;}
+  ["dash","setup","mockset","run","res","add"].forEach(x=>$("v-"+x).classList.toggle("hide",x!==v));
+  $("nav").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  if(v==="dash")renderDash();
+  if(v==="setup")renderSetup();
+  if(v==="mockset")renderMockSetup();
+  if(v==="add")renderImport();
+}
+
+function renderDash(){
+  const st=stats[CUR_EXAM];
+  $("dashTitle").textContent=`Running scores — JEE ${CUR_EXAM}`;
+  $("dashSub").textContent=CUR_EXAM==="Main"
+    ? "Cumulative across all practice sets and mocks. Marked +4 correct, −1 wrong, 0 skipped."
+    : "Cumulative across Advanced practice. Single-correct +3/−1, multiple-correct +4/partial/−2, numerical +4/0.";
+  const board=$("board");board.innerHTML="";let tM=0,tA=0,tC=0;
+  SUBJECTS.forEach(s=>{const d=st[s];tM+=d.marks;tA+=d.attempted;tC+=d.correct;
+    const acc=d.attempted?Math.round(d.correct/d.attempted*100)+"%":"—";
+    board.insertAdjacentHTML("beforeend",`<div class="score ${cls(s)}"><div class="tag">${s}</div><div class="marks">${d.marks}</div><div class="meta">${d.correct}✓ / ${d.wrong}✗ · ${acc}</div></div>`);});
+  $("ovMarks").textContent=tM;$("ovAtt").textContent=tA;$("ovCor").textContent=tC;
+  $("ovAcc").textContent=tA?Math.round(tC/tA*100)+"%":"—";
+  const mc=$("mockHistCard");
+  if(CUR_EXAM==="Main"){mc.style.display="";
+    const ms=loadMocks();
+    $("mockHist").innerHTML= ms.length? ms.slice().reverse().map(m=>
+      `<div class="mockrow"><span>${new Date(m.date).toLocaleString([], {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span><span class="mm">${m.total} / 300</span></div>`).join("")
+      : `<div class="sub" style="margin:0">No full mocks yet. Take one from the Mock test tab.</div>`;
+  } else mc.style.display="none";
+  const b=forExam(CUR_EXAM),u=loadUQ().filter(q=>q.exam===CUR_EXAM).length;
+  const exIds=new Set(b.map(q=>q.id)),mCount=[...mastered].filter(id=>exIds.has(id)).length;
+  $("bankCount").textContent=`${b.length} questions for ${CUR_EXAM} (${b.length-u} built-in + ${u} imported) · ${mCount} mastered`;
+}
+
+function sel(cont){return[...$(cont).querySelectorAll(".chip.on")].map(c=>c.dataset.sub||c.dataset.diff);}
+function pMatch(){const subs=sel("subChips"),diffs=sel("diffChips");
+  return forExam(CUR_EXAM).filter(q=>subs.includes(q.s)&&diffs.includes(q.d));}
+function pFiltered(){const onlyNew=$("onlyNew")&&$("onlyNew").checked;
+  return pMatch().filter(q=>!onlyNew||!mastered.has(q.id));}
+function renderSetup(){
+  $("setupSub").textContent=`JEE ${CUR_EXAM} · pick subjects and difficulty, then start.`;
+  $("advNote").style.display=CUR_EXAM==="Advanced"?"block":"none";
+  $("advNote").innerHTML="Advanced practice includes single-correct, <b>multiple-correct</b> (choose all that apply — partial marks apply), and numerical questions. JEE Advanced has no fixed paper pattern year to year, so this is topic practice, not a fixed-format mock.";
+  bindOnlyNew();refreshAvail();
+}
+function refreshAvail(){$("availCount").value=pFiltered().length+" questions";}
+function bindOnlyNew(){const c=$("onlyNew");if(c)c.onchange=refreshAvail;}
+function bindChips(cont){$(cont).querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+  if(c.classList.contains("on")&&$(cont).querySelectorAll(".chip.on").length===1)return;
+  c.classList.toggle("on");refreshAvail();});}
+
+function renderMockSetup(){
+  const pool=forExam("Main");
+  const rep=SUBJECTS.map(s=>{const mc=pool.filter(q=>q.s===s&&q.type==="mcq").length,nm=pool.filter(q=>q.s===s&&q.type==="numerical").length;
+    const ok=mc>=20&&nm>=5;return `${s}: ${mc} MCQ / ${nm} numerical ${ok?"✓":"⚠ need 20/5"}`;}).join("<br>");
+  $("mockAvail").innerHTML=rep;
+}
+
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+function pickPreferNew(pool,n){const fresh=shuffle(pool.filter(q=>!mastered.has(q.id)));
+  if(fresh.length>=n)return fresh.slice(0,n);
+  return fresh.concat(shuffle(pool.filter(q=>mastered.has(q.id)))).slice(0,n);}
+function startPractice(){
+  let pool=pFiltered();
+  if(!pool.length){
+    toast(pMatch().length? "He's answered all of these correctly — untick 'only new' to revise, or import more.":"No questions match those filters.");
+    return;}
+  pool=shuffle(pool).slice(0,+$("numQ").value);
+  test={mode:"practice",exam:CUR_EXAM,qs:pool,answers:Array(pool.length).fill(null),idx:0};
+  go("run");renderQ();
+}
+function startMock(){
+  const pool=forExam("Main");let qs=[];
+  for(const s of SUBJECTS){
+    const allMc=pool.filter(q=>q.s===s&&q.type==="mcq"),allNm=pool.filter(q=>q.s===s&&q.type==="numerical");
+    if(allMc.length<20||allNm.length<5){toast(`Not enough ${s} questions for a full mock — import more.`);return;}
+    const mc=pickPreferNew(allMc,20),nm=pickPreferNew(allNm,5);
+    qs=qs.concat(mc,nm);
+  }
+  test={mode:"mock",exam:"Main",qs,answers:Array(qs.length).fill(null),idx:0,endsAt:Date.now()+180*60*1000};
+  go("run");startTimer();renderQ();
+}
+function startTimer(){
+  $("timer").classList.remove("hide");
+  const tick=()=>{
+    const left=Math.max(0,Math.round((test.endsAt-Date.now())/1000));
+    const h=String(Math.floor(left/3600)).padStart(2,"0"),m=String(Math.floor(left%3600/60)).padStart(2,"0"),s=String(left%60).padStart(2,"0");
+    $("timer").textContent=`${h}:${m}:${s}`;
+    $("timer").classList.toggle("warn",left<300);
+    if(left<=0){clearInterval(timerInt);timerInt=null;toast("Time up — auto-submitting.");submitTest();}
+  };
+  tick();timerInt=setInterval(tick,1000);
+}
+function renderQ(){
+  const q=test.qs[test.idx],i=test.idx;
+  $("runProg").textContent=(test.mode==="mock"?"Mock · ":"")+`Question ${i+1} of ${test.qs.length}`;
+  $("runTags").innerHTML=`<span class="pill ${cls(q.s)}">${q.s}</span><span class="pill d">${test.mode==="mock"?(q.t||""):q.d}</span>`;
+  $("runQ").textContent=q.q;
+  const hint=q.type==="numerical"?"Numerical value — type a number.":q.type==="multiple"?"Multiple correct — select all that apply.":"Single correct — choose one.";
+  $("runTypeHint").textContent=hint;
+  const body=$("runBody"),a=test.answers[i];
+  if(q.type==="mcq"){
+    body.innerHTML=`<div class="opts">`+q.o.map((o,k)=>`<div class="opt ${a===k?'sel':''}" data-k="${k}"><span class="k">${"ABCD"[k]}</span><span>${o}</span></div>`).join("")+`</div>`;
+    body.querySelectorAll(".opt").forEach(el=>el.onclick=()=>{test.answers[i]=+el.dataset.k;renderQ();});
+  }else if(q.type==="multiple"){
+    const arr=Array.isArray(a)?a:[];
+    body.innerHTML=`<div class="opts">`+q.o.map((o,k)=>`<div class="opt ${arr.includes(k)?'sel':''}" data-k="${k}"><span class="k">${arr.includes(k)?'☑':'☐'}</span><span>${o}</span></div>`).join("")+`</div>`;
+    body.querySelectorAll(".opt").forEach(el=>el.onclick=()=>{let set=new Set(Array.isArray(test.answers[i])?test.answers[i]:[]);const k=+el.dataset.k;set.has(k)?set.delete(k):set.add(k);test.answers[i]=[...set].sort((x,y)=>x-y);renderQ();});
+  }else{
+    body.innerHTML=`<label>Your numerical answer</label><input class="numin" id="numAns" type="number" step="any" value="${a??''}" placeholder="Enter a number">`;
+    $("numAns").oninput=e=>{test.answers[i]=e.target.value===""?null:parseFloat(e.target.value);updatePalette();};
+  }
+  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===test.qs.length-1;
+  updatePalette();
+}
+function answered(a){return Array.isArray(a)?a.length>0:(a!=null&&a!=="");}
+function updatePalette(){
+  const p=$("palette");
+  if(test.mode==="mock"){
+    let html="";SUBJECTS.forEach(s=>{
+      const idxs=test.qs.map((q,k)=>({q,k})).filter(o=>o.q.s===s).map(o=>o.k);
+      html+=`<div class="palsec"><div class="plabel">${s}</div><div class="dots">`+
+        idxs.map(k=>`<button class="dot ${answered(test.answers[k])?'done':''} ${k===test.idx?'cur':''}" data-k="${k}">${k+1}</button>`).join("")+`</div></div>`;
+    });
+    p.innerHTML=`<div class="card" style="margin-top:16px">${html}</div>`;
+  }else{
+    p.innerHTML=`<div class="dots" style="margin-top:16px">`+test.qs.map((q,k)=>`<button class="dot ${answered(test.answers[k])?'done':''} ${k===test.idx?'cur':''}" data-k="${k}">${k+1}</button>`).join("")+`</div>`;
+  }
+  p.querySelectorAll(".dot").forEach(d=>d.onclick=()=>{test.idx=+d.dataset.k;renderQ();});
+}
+
+function submitTest(){
+  if(timerInt){clearInterval(timerInt);timerInt=null;}
+  const per={Physics:blank(),Chemistry:blank(),Maths:blank()};const detail=[];
+  let newlyMastered=0;
+  test.qs.forEach((q,i)=>{const r=scoreQ(q,test.answers[i],test.exam);detail.push(r);
+    const p=per[q.s];p.marks+=r.m;
+    if(r.st!=="s"){p.attempted++;if(r.st==="c"||r.st==="p")p.correct++;else if(r.st==="w")p.wrong++;}
+    if(r.st==="c"&&q.id&&!mastered.has(q.id)){mastered.add(q.id);newlyMastered++;}});
+  SUBJECTS.forEach(s=>{["attempted","correct","wrong","marks"].forEach(k=>stats[test.exam][s][k]+=per[s][k]);});
+  saveStats(stats);saveMastered();
+  test.newlyMastered=newlyMastered;
+  try{const hist=JSON.parse(localStorage.getItem(K_HIST))||[];
+    hist.push({t:Date.now(),mode:test.mode,exam:test.exam,
+      marks:SUBJECTS.reduce((a,s)=>a+per[s].marks,0),
+      max:test.qs.reduce((a,q)=>a+maxMarks(q,test.exam),0),
+      subj:Object.fromEntries(SUBJECTS.map(s=>[s,{att:per[s].attempted,cor:per[s].correct,marks:per[s].marks}]))});
+    localStorage.setItem(K_HIST,JSON.stringify(hist));}catch(e){}
+  if(test.mode==="mock"){
+    const total=SUBJECTS.reduce((a,s)=>a+per[s].marks,0);
+    const mocks=loadMocks();mocks.push({date:Date.now(),total,per:{Physics:per.Physics.marks,Chemistry:per.Chemistry.marks,Maths:per.Maths.marks}});saveMocks(mocks);
+  }
+  renderResults(per,detail);go("res");
+}
+function renderResults(per,detail){
+  $("resTitle").textContent=test.mode==="mock"?"Mock test — scorecard":"Set marked";
+  let m=0,att=0,cor=0;const total=test.qs.length;
+  SUBJECTS.forEach(s=>{m+=per[s].marks;att+=per[s].attempted;cor+=per[s].correct;});
+  const maxTot=test.qs.reduce((a,q)=>a+maxMarks(q,test.exam),0);
+  const nm=test.newlyMastered||0;
+  $("resSummary").innerHTML=`Scored <b>${m}</b> / ${maxTot} · ${cor}/${att} correct · ${total-att} skipped.`+(nm?` <span style="color:var(--good)">${nm} new question${nm>1?'s':''} mastered — won't repeat in practice.</span>`:"");
+  const rb=$("resBoard");rb.innerHTML="";
+  SUBJECTS.forEach(s=>{if(test.qs.some(q=>q.s===s))
+    rb.insertAdjacentHTML("beforeend",`<div class="score ${cls(s)}"><div class="tag">${s}</div><div class="marks">${per[s].marks>=0?'+':''}${per[s].marks}</div><div class="meta">${per[s].correct}✓ / ${per[s].wrong}✗</div></div>`);});
+  const tc=$("resTotalCard");
+  if(test.mode==="mock"){tc.style.display="";tc.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><b style="font-family:var(--disp);font-size:1.05rem">Total score</b><span class="mm" style="font-family:var(--mono);font-weight:700;font-size:1.6rem">${m} / 300</span></div>`;}
+  else tc.style.display="none";
+  $("reviewList").innerHTML=test.qs.map((q,i)=>{
+    const r=detail[i];const vc=r.st;
+    const vt={c:"Correct +"+r.m,w:"Wrong "+r.m,s:"Skipped",p:"Partial +"+r.m}[r.st];
+    let shown="";
+    if(q.type==="numerical"){shown=`<div class="meta" style="margin-top:8px;font-family:var(--mono);color:var(--muted)">Your answer: ${test.answers[i]??"—"} · Correct: ${q.val}</div>`;}
+    else{const chosen=q.type==="multiple"?(test.answers[i]||[]):(test.answers[i]==null?[]:[test.answers[i]]);
+      const corr=q.type==="multiple"?q.as:[q.a];
+      shown=`<div class="opts" style="margin-top:8px">`+q.o.map((o,k)=>{let c="";if(corr.includes(k))c=chosen.includes(k)?"correct":"miss";else if(chosen.includes(k))c="wrong";
+        return `<div class="opt ${c}"><span class="k">${"ABCD"[k]}</span><span>${o}</span></div>`;}).join("")+`</div>`;}
+    return `<div class="rev"><div class="tagline"><span class="pill ${cls(q.s)}">${q.s}</span><span class="pill d">${q.d}</span><span class="verdict ${vc}">${vt}</span></div>
+      <div class="rq">${i+1}. ${q.q}</div>${shown}<div class="sol"><b>Solution.</b> ${q.sol}</div></div>`;
+  }).join("");
+}
+
+const TEMPLATE=`[
+  {
+    "exam": "Main",            // "Main" or "Advanced"
+    "s": "Physics",            // "Physics" | "Chemistry" | "Maths"
+    "d": "Medium",             // "Easy" | "Medium" | "Hard"
+    "t": "Kinematics",         // topic (optional)
+    "type": "mcq",             // "mcq" | "numerical" | "multiple"
+    "q": "Your question text",
+    "o": ["A", "B", "C", "D"], // options (mcq / multiple)
+    "a": 2,                    // index 0-3 of correct option (mcq)
+    "sol": "Worked solution"
+  },
+  {
+    "exam": "Main", "s": "Maths", "d": "Hard", "type": "numerical",
+    "q": "Compute ...", "val": 42, "tol": 0, "sol": "..."
+  },
+  {
+    "exam": "Advanced", "s": "Chemistry", "d": "Hard", "type": "multiple",
+    "q": "Which are correct?", "o": ["w","x","y","z"], "as": [0, 2], "sol": "..."
+  }
+]`;
+function renderImport(){$("tmpl").textContent=TEMPLATE;}
+function validateQ(q){
+  if(!["Main","Advanced"].includes(q.exam))return"bad exam";
+  if(!SUBJECTS.includes(q.s))return"bad subject";
+  if(!q.q||!(""+q.q).trim())return"empty question";
+  if(!["mcq","numerical","multiple"].includes(q.type))return"bad type";
+  if(q.type==="mcq"){if(!Array.isArray(q.o)||q.o.length<2)return"need options";if(typeof q.a!=="number"||q.a<0||q.a>=q.o.length)return"bad answer index";}
+  else if(q.type==="multiple"){if(!Array.isArray(q.o)||q.o.length<2)return"need options";if(!Array.isArray(q.as)||!q.as.length||q.as.some(x=>x<0||x>=q.o.length))return"bad 'as'";}
+  else{if(typeof q.val!=="number")return"need numeric val";}
+  return null;
+}
+function loadImport(){
+  let data;try{data=JSON.parse($("importBox").value);}catch(e){$("importResult").innerHTML=`<span style="color:var(--bad)">JSON error: ${e.message}</span>`;return;}
+  if(!Array.isArray(data)){$("importResult").innerHTML=`<span style="color:var(--bad)">Top level must be an array [ ... ].</span>`;return;}
+  const good=[],errs=[];
+  data.forEach((q,i)=>{const e=validateQ(q);if(e)errs.push(`#${i+1}: ${e}`);else good.push({d:"Medium",t:"Imported",tol:0,sol:"(no solution provided)",...q});});
+  if(good.length){const uq=loadUQ();good.forEach((q,i)=>q.id="user"+Date.now()+"_"+i);saveUQ(uq.concat(good));$("importBox").value="";}
+  $("importResult").innerHTML=`<b style="color:var(--good)">Added ${good.length}.</b>`+(errs.length?` <span style="color:var(--bad)">Skipped ${errs.length}:</span><br><span style="font-family:var(--mono);font-size:.78rem">${errs.join("<br>")}</span>`:"");
+  renderDash();
+}
+
+document.querySelectorAll(".examtog button").forEach(b=>b.onclick=()=>{
+  CUR_EXAM=b.dataset.exam;document.querySelectorAll(".examtog button").forEach(x=>x.classList.toggle("on",x===b));
+  buildNav();go("dash");});
+bindChips("subChips");bindChips("diffChips");
+$("startBtn").onclick=startPractice;
+$("startMockBtn").onclick=()=>{if(confirm("Start the 3-hour mock? The timer begins now."))startMock();};
+$("prevBtn").onclick=()=>{test.idx--;renderQ();};
+$("nextBtn").onclick=()=>{test.idx++;renderQ();};
+$("submitBtn").onclick=()=>{const un=test.answers.filter(a=>!answered(a)).length;
+  if(un&&!confirm(`${un} question(s) unanswered (0 marks). Submit anyway?`))return;submitTest();};
+$("quitBtn").onclick=()=>{if(confirm("Quit without marking? Nothing will be saved.")){if(timerInt){clearInterval(timerInt);timerInt=null;}go("dash");}};
+$("againBtn").onclick=()=>go(test&&test.mode==="mock"?"mockset":"setup");
+$("toDashBtn").onclick=()=>go("dash");
+$("resetBtn").onclick=()=>{if(confirm(`Clear cumulative scores for JEE ${CUR_EXAM}? (Imported questions & mock history kept.)`)){stats[CUR_EXAM]={Physics:blank(),Chemistry:blank(),Maths:blank()};saveStats(stats);renderDash();toast("Scores reset.");}};
+$("resetMastBtn").onclick=()=>{const exIds=new Set(forExam(CUR_EXAM).map(q=>q.id));const n=[...mastered].filter(id=>exIds.has(id)).length;
+  if(!n){toast("No mastered questions to reset for "+CUR_EXAM+".");return;}
+  if(confirm(`Make all ${n} mastered ${CUR_EXAM} questions available again? (Scores are kept.)`)){mastered=new Set([...mastered].filter(id=>!exIds.has(id)));saveMastered();renderDash();toast("All questions available again.");}};
+$("exportBtn").onclick=()=>{const data={stats,userQuestions:loadUQ(),mocks:loadMocks(),mastered:[...mastered],history:JSON.parse(localStorage.getItem(K_HIST)||"[]"),exported:new Date().toISOString()};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download="jee-progress.json";a.click();};
+$("copyTmplBtn").onclick=()=>{navigator.clipboard.writeText(TEMPLATE).then(()=>toast("Template copied."));};
+$("dlSampleBtn").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(forExam(CUR_EXAM).map(({id,...r})=>r),null,2)],{type:"application/json"}));a.download="jee-bank-sample.json";a.click();};
+$("loadBtn").onclick=loadImport;
+$("clearUserBtn").onclick=()=>{if(confirm("Delete ALL imported questions? Built-in questions stay.")){saveUQ([]);renderImport();renderDash();toast("Imported questions deleted.");}};
+
+buildNav();renderDash();
+</script>
+</body>
+</html>
